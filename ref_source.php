@@ -2,59 +2,93 @@
 
 class CF_Ref_Source {
 
-	protected $tracked_utm_params = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_referrer');
-
 	/**
-	 * If needed, stores data about referrer and UTM params
+	 * Dev note: keep this function clean from Kohana helpers, so it can be easily copied to WordPress plugin
 	 */
-	public function maybe_store_ref_source()
+	public function maybe_store_affiliator_data()
 	{
-		$referer_domain = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) : '';
-		if ($referer_domain === $_SERVER['HTTP_HOST'])
+		$http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+		if (parse_url($http_referer, PHP_URL_HOST) === $_SERVER['HTTP_HOST'])
+		{
+			// Wrong source to track
+			return;
+		}
+		if ( ! isset($_GET) OR ! isset($_GET['ref']) OR empty($_GET['ref']))
 		{
 			return;
 		}
-		$ref_source = $this->get_stored_ref_source();
-		$query = $_GET;
-		if (isset($query['ref']))
+		$prev_affiliator_data = $this->get_stored_affiliator_data();
+		if (isset($prev_affiliator_data['username']) AND $prev_affiliator_data['username'] === $_GET['ref'])
 		{
-			$ref_source['ref'] = $query['ref'];
+			return;
 		}
-		// If at least one tracked utm defined, tracking them all
-		if ( ! empty(array_intersect($this->tracked_utm_params, array_keys($query))))
-		{
-			$ref_source_ref = isset($ref_source['ref']) ? $ref_source['ref'] : '';
-			$ref_source = array_intersect_key($query, array_flip($this->tracked_utm_params));
-			if ($ref_source_ref)
-			{
-				$ref_source['ref'] = $ref_source_ref;
-			}
-		}
-		// Using top-level domain instead of subdoimain
+		$affiliator_data = array(
+			'username' => $_GET['ref'],
+			'affiliation_date' => date('Y-m-d H:i:s'),
+		);
+		// Getting top-level domain from subdomains when needed
 		$domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
-		// Setting cookie for a month
-		setcookie('ref_source', json_encode($ref_source), time() + 30 * 24 * 60 * 60, '/', $domain);
+		setcookie('affiliator_data', json_encode($affiliator_data), time() + 30 * 24 * 60 * 60, '/', $domain);
+		// Storing in gloval var so the value will be available in the same application run
+		$_COOKIE['affiliator_data'] = json_encode($affiliator_data);
 	}
 
 	/**
 	 * @return array
+	 *
+	 * Dev note: keep this function clean from Kohana helpers, so it can be easily copied to WordPress plugin
 	 */
-	public function get_stored_ref_source()
+	public function get_stored_affiliator_data()
 	{
-		$result = isset($_COOKIE['ref_source']) ? $_COOKIE['ref_source'] : '';
-		$result = json_decode($result, TRUE);
+		$raw_result = isset($_COOKIE['affiliator_data']) ? $_COOKIE['affiliator_data'] : '';
+		$result = json_decode($raw_result, TRUE);
 		if ( ! is_array($result))
 		{
-			return array();
+			$result = array();
 		}
-		// Keeping only ref_source keys that are intended to be here
-		foreach ($result as $key => $value)
+		$result = array_intersect_key($result, array_flip(array('username', 'affiliation_date')));
+
+		return $result;
+	}
+
+	protected $tracked_utm_params = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_referrer');
+
+	/**
+	 * Dev note: keep this function clean from Kohana helpers, so it can be easily copied to WordPress plugin
+	 */
+	public function maybe_store_utm_params()
+	{
+		$http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+		if (parse_url($http_referer, PHP_URL_HOST) === $_SERVER['HTTP_HOST'])
 		{
-			if ($key !== 'ref' AND ! in_array($key, $this->tracked_utm_params))
-			{
-				unset($result[$key]);
-			}
+			// Wrong source to track
+			return;
 		}
+		if ( ! isset($_GET) OR empty(array_intersect($this->tracked_utm_params, array_keys($_GET))))
+		{
+			return;
+		}
+		$utm_params = array_intersect_key($_GET, array_flip($this->tracked_utm_params));
+		$domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
+		setcookie('utm_params', json_encode($utm_params), time() + 30 * 24 * 60 * 60, '/', $domain);
+		// Storing in gloval var so the value will be available in the same application run
+		$_COOKIE['utm_params'] = json_encode($utm_params);
+	}
+
+	/**
+	 * @return array
+	 *
+	 * Dev note: keep this function clean from Kohana helpers, so it can be easily copied to WordPress plugin
+	 */
+	public function get_stored_utm_params()
+	{
+		$raw_result = isset($_COOKIE['utm_params']) ? $_COOKIE['utm_params'] : '';
+		$result = json_decode($raw_result, TRUE);
+		if ( ! is_array($result))
+		{
+			$result = array();
+		}
+		$result = array_intersect_key($result, array_flip($this->tracked_utm_params));
 
 		return $result;
 	}
@@ -62,4 +96,5 @@ class CF_Ref_Source {
 }
 
 $cf_ref_source = new CF_Ref_Source;
-add_action( 'init', array( $cf_ref_source, 'maybe_store_ref_source' ) );
+add_action( 'init', array( $cf_ref_source, 'maybe_store_affiliator_data' ) );
+add_action( 'init', array( $cf_ref_source, 'maybe_store_utm_params' ) );
