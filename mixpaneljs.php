@@ -54,10 +54,3 @@
         }
     });</script>
 <!-- end Mixpanel -->
-
-<script type="text/javascript">
-    mixpanel.set_config({
-        cross_subdomain_cookie: 'true'
-    });
-</script>
-<!-- end Mixpanel -->

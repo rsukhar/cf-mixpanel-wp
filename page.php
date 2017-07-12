@@ -1,34 +1,34 @@
 <?php
-add_action('wp_head', array('MixPanel', 'insert_tracker'));
-add_action('wp_footer', array('MixPanel', 'insert_event'));
 
-class MixPanel
-{
+add_action( 'wp_head', array( 'MixPanel', 'insert_tracker' ) );
+add_action( 'wp_footer', array( 'MixPanel', 'insert_event' ) );
 
-    /*
-    * Gets the value of the key mixpanel_event_label for this specific Post
-    * @return string the value of the meta box set on the page
-    */
-    static function get_post_event_label()
-    {
-        global $post;
-        return get_post_meta($post->ID, 'mixpanel_event_label', true);
-    }
+class MixPanel {
 
-    /*
-    * Inserts the value for the mixpanel.track() API Call
-    * @return boolean technically this should be html..
-    */
-    function insert_event()
-    {
-        $settings = (array)get_option('mixpanel_settings');
+	/*
+	* Gets the value of the key mixpanel_event_label for this specific Post
+	* @return string the value of the meta box set on the page
+	*/
+	public static function get_post_event_label() {
+		global $post;
 
-        if (!isset($settings['token_id'])) {
-            self::no_mixpanel_token_found();
-            return false;
-        }
+		return get_post_meta( $post->ID, 'mixpanel_event_label', TRUE );
+	}
 
-        echo "<script type='text/javascript'>
+	/*
+	* Inserts the value for the mixpanel.track() API Call
+	* @return boolean technically this should be html..
+	*/
+	public static function insert_event() {
+		$settings = (array) get_option( 'mixpanel_settings' );
+
+		if ( ! isset( $settings['token_id'] ) ) {
+			self::no_mixpanel_token_found();
+
+			return FALSE;
+		}
+
+		echo "<script type='text/javascript'>
 		var rightNow = new Date();
 		var humanDate = rightNow.toDateString();
 
@@ -39,31 +39,29 @@ class MixPanel
 		mixpanel.track(\"Page View\");
 		</script>";
 
-        return true;
-    }
+		return TRUE;
+	}
 
-    /**
-     * Adds the Javascript necessary to start tracking via MixPanel.
-     * this gets added to the <head> section usually.
-     *
-     * @return [type] [description]
-     */
-    function insert_tracker()
-    {
-        $settings = (array)get_option('mixpanel_settings');
-        if (!isset($settings['token_id'])) {
-            self::no_mixpanel_token_found();
-            return false;
-        }
+	/**
+	 * Adds the Javascript necessary to start tracking via MixPanel.
+	 * this gets added to the <head> section usually.
+	 *
+	 * @return [type] [description]
+	 */
+	public static function insert_tracker() {
+		$settings = (array) get_option( 'mixpanel_settings' );
+		if ( ! isset( $settings['token_id'] ) ) {
+			self::no_mixpanel_token_found();
 
-        require_once dirname(__FILE__) . '/mixpaneljs.php';
-        return true;
-    }
+			return FALSE;
+		}
 
-    static function no_mixpanel_token_found()
-    {
-        echo "<!-- No MixPanel Token Defined -->";
-    }
+		require_once dirname( __FILE__ ) . '/mixpaneljs.php';
+
+		return TRUE;
+	}
+
+	public static function no_mixpanel_token_found() {
+		echo "<!-- No MixPanel Token Defined -->";
+	}
 }
-
-?>
