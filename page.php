@@ -33,10 +33,10 @@ class MixPanel {
 		var humanDate = rightNow.toDateString();
 
 		mixpanel.register_once({
-			'first_wp_page': document.title,
-			'first_wp_contact': humanDate
+			'First site page': document.title,
+			'First site contact': humanDate
 		});
-		mixpanel.track(\"Page View\");
+		mixpanel.track('Page View');
 		</script>";
 
 		return TRUE;
