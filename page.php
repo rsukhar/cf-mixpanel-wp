@@ -50,7 +50,7 @@ class MixPanel {
 	 */
 	public static function insert_tracker() {
 		$settings = (array) get_option( 'mixpanel_settings' );
-		if ( ! isset( $settings['token_id'] ) OR $_COOKIE['disable_tracking']) {
+		if ( ! isset( $settings['token_id'] ) OR (isset($_COOKIE['disable_tracking']) AND $_COOKIE['disable_tracking'])) {
 			self::no_mixpanel_token_found();
 
 			return FALSE;
