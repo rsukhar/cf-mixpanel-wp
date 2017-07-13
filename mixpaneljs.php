@@ -40,6 +40,13 @@
     })(document, window.mixpanel || []);
     mixpanel.init("<?php echo $settings['token_id']; ?>", {
         loaded: function (mixpanel) {
+        	<?php
+			global $cf_ref_source;
+			$utm_params = $cf_ref_source->get_stored_utm_params();
+			if ( ! empty( $utm_params ) ) {
+				?>mixpanel.register(<?php echo json_encode($utm_params) ?>);<?php
+			}
+			?>
             jQuery('.w-tabs-section-header').click(function (e) {
                 mixpanel.track("FAQ View", {'Question': jQuery.trim(jQuery(e.currentTarget).text())});
             });

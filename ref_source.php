@@ -68,6 +68,12 @@ class CF_Ref_Source {
 		{
 			return;
 		}
+		$prev_utm_params = $this->get_stored_utm_params();
+		if ( ! empty($prev_utm_params))
+		{
+			// Using only first-touch approach for now
+			return;
+		}
 		$utm_params = array_intersect_key($_GET, array_flip($this->tracked_utm_params));
 		$domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
 		setcookie('utm_params', json_encode($utm_params), time() + 30 * 24 * 60 * 60, '/', $domain);
@@ -95,6 +101,7 @@ class CF_Ref_Source {
 
 }
 
+global $cf_ref_source;
 $cf_ref_source = new CF_Ref_Source;
 add_action( 'init', array( $cf_ref_source, 'maybe_store_affiliator_data' ) );
 add_action( 'init', array( $cf_ref_source, 'maybe_store_utm_params' ) );
