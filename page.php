@@ -22,7 +22,7 @@ class MixPanel {
 	public static function insert_event() {
 		$settings = (array) get_option( 'mixpanel_settings' );
 
-		if ( ! isset( $settings['token_id'] ) ) {
+		if ( ! isset( $settings['token_id'] ) OR (isset($_COOKIE['disable_tracking']) AND $_COOKIE['disable_tracking']) ) {
 			self::no_mixpanel_token_found();
 
 			return FALSE;
@@ -36,7 +36,16 @@ class MixPanel {
 			'First site page': document.title,
 			'First site contact': humanDate
 		});
-		mixpanel.track('Page View');
+		mixpanel.track('Page View', {
+			'Domain': location.hostname,
+			'Path': location.pathname
+		});
+		setTimeout(function(){
+			mixpanel.track('Page Long View', {
+				'Domain': location.hostname,
+				'Path': location.pathname
+			});
+		}, 30000);
 		</script>";
 
 		return TRUE;
