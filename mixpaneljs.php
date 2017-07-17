@@ -47,8 +47,26 @@
 				?>mixpanel.register(<?php echo json_encode($utm_params) ?>);<?php
 			}
 			?>
+			// Tracking initial source
+			var getSource = function(){
+				var sources = [
+					['Google', 'https?://(.*)google.([^/?]*)'],
+					['Bing', 'https?://(.*)bing.([^/?]*)'],
+					['Yandex', 'https?://(yandex|ya.ru)'],
+					['Yahoo', 'https?://(.*)yahoo.([^/?]*)'],
+					['Facebook', 'https?://(.*)facebook.([^/?]*)'],
+					['Twitter', 'https?://(.*)twitter.([^/?]*)']
+				];
+				for (var i = 0; i < sources.length; i++){
+					if (document.referrer.search(sources[i][1]) === 0) return sources[i][0];
+				}
+				return 'Other';
+			};
+			mixpanel.register_once({'Initial source': getSource()});
+			mixpanel.people.set_once({'Initial source': getSource()});
+			console.log(getSource());
             jQuery('.w-tabs-section-header').click(function (e) {
-                mixpanel.track("FAQ View", {'Question': jQuery.trim(jQuery(e.currentTarget).text())});
+                mixpanel.track('FAQ View', {'Question': jQuery.trim(jQuery(e.currentTarget).text())});
             });
             var VideoMonitor = setInterval(function(){
                 var elem = document.activeElement;

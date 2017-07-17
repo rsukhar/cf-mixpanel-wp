@@ -13,7 +13,7 @@ function mixpanel_event_box() {
 	?>
 	<table class="form_table">
 		<tr>
-			<th width="30%"><label for="mixpanel_event_label">MixPanel Event Name</label></th>
+			<th width="30%"><label for="mixpanel_event_label">MixPanel Event Page Type</label></th>
 			<td width="70%"><input type="text" size="60" name="mixpanel_event_label"
 								   value="<?php echo $mixpanel_event_label; ?>" /></td>
 		</tr>
