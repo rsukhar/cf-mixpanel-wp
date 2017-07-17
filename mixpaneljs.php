@@ -64,7 +64,6 @@
 			};
 			mixpanel.register_once({'Initial source': getSource()});
 			mixpanel.people.set_once({'Initial source': getSource()});
-			console.log(getSource());
             jQuery('.w-tabs-section-header').click(function (e) {
                 mixpanel.track('FAQ View', {'Question': jQuery.trim(jQuery(e.currentTarget).text())});
             });
