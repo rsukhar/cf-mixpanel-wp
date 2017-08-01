@@ -45,7 +45,7 @@ class MixPanel {
 				'Domain': location.hostname,
 				'Path': location.pathname
 			});
-		}, 30000);
+		}, 21000);
 		</script>";
 
 		return TRUE;
