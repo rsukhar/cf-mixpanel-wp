@@ -64,10 +64,6 @@ class CF_Ref_Source {
 			// Wrong source to track
 			return;
 		}
-		if ( ! isset($_GET) OR empty(array_intersect($this->tracked_utm_params, array_keys($_GET))))
-		{
-			return;
-		}
 		$prev_utm_params = $this->get_stored_utm_params();
 		if ( ! empty($prev_utm_params))
 		{
@@ -75,6 +71,10 @@ class CF_Ref_Source {
 			return;
 		}
 		$utm_params = array_intersect_key($_GET, array_flip($this->tracked_utm_params));
+		if ( ! isset($utm_params['utm_referrer']))
+		{
+			$utm_params['utm_referrer'] = $http_referer;
+		}
 		$domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
 		setcookie('utm_params', json_encode($utm_params), time() + 30 * 24 * 60 * 60, '/', $domain);
 		// Storing in gloval var so the value will be available in the same application run
