@@ -28,7 +28,8 @@ class MixPanel {
 			return FALSE;
 		}
 
-		echo "<script type='text/javascript'>
+		// Mixpanel
+		?><script type='text/javascript'>
 		var rightNow = new Date();
 		var humanDate = rightNow.toDateString();
 
@@ -46,7 +47,7 @@ class MixPanel {
 				'Path': location.pathname
 			});
 		}, 21000);
-		</script>";
+		</script><?php
 
 		return TRUE;
 	}
@@ -66,6 +67,7 @@ class MixPanel {
 		}
 
 		require_once dirname( __FILE__ ) . '/mixpaneljs.php';
+		require_once dirname( __FILE__ ) . '/facebookjs.php';
 
 		return TRUE;
 	}
