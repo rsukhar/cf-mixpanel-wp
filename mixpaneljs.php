@@ -80,6 +80,7 @@
 <!-- end Mixpanel -->
 <!-- Roistat start -->
 <script>
+	window.roistatCookieDomain = 'convertful.com';
 	(function(w, d, s, h, id) {
 		w.roistatProjectId = id; w.roistatHost = h;
 		var p = d.location.protocol == "https:" ? "https://" : "http://";
