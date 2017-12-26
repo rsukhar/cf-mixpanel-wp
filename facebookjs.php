@@ -1,3 +1,7 @@
+<div class="fb-customerchat"
+	 page_id="convertful"
+	 minimized="true">
+</div>
 <!-- Facebook Pixel Code -->
 <script>
 	!function(f,b,e,v,n,t,s)

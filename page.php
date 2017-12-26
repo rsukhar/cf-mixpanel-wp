@@ -2,6 +2,7 @@
 
 add_action( 'wp_head', array( 'MixPanel', 'insert_tracker' ) );
 add_action( 'wp_footer', array( 'MixPanel', 'insert_event' ) );
+add_action( 'us_before_canvas', array( 'MixPanel', 'insert_fb_chat' ) );
 
 class MixPanel {
 
@@ -74,5 +75,9 @@ class MixPanel {
 
 	public static function no_mixpanel_token_found() {
 		echo "<!-- No MixPanel Token Defined -->";
+	}
+
+	public static function insert_fb_chat() {
+		require_once dirname( __FILE__ ) . '/facebookchat.php';
 	}
 }
