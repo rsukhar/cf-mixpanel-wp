@@ -78,6 +78,6 @@ class MixPanel {
 	}
 
 	public static function insert_fb_chat() {
-		require_once dirname( __FILE__ ) . '/facebookchat.php';
+//		require_once dirname( __FILE__ ) . '/facebookchat.php';
 	}
 }
