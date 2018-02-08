@@ -26,6 +26,10 @@ class CF_Ref_Source {
 			'username' => $_GET['ref'],
 			'affiliation_date' => date('Y-m-d H:i:s'),
 		);
+		if (isset($_GET['refs']) AND ! empty($_GET['refs']))
+		{
+			$affiliator_data['refs'] = $_GET['refs'];
+		}
 		// Getting top-level domain from subdomains when needed
 		$domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
 		setcookie('affiliator_data', json_encode($affiliator_data), time() + 30 * 24 * 60 * 60, '/', $domain);
@@ -46,7 +50,7 @@ class CF_Ref_Source {
 		{
 			$result = array();
 		}
-		$result = array_intersect_key($result, array_flip(array('username', 'affiliation_date')));
+		$result = array_intersect_key($result, array_flip(array('username', 'affiliation_date', 'refs')));
 
 		return $result;
 	}
